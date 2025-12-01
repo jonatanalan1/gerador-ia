@@ -8,6 +8,11 @@
       font-family: Arial, sans-serif;
       padding: 40px;
       text-align: center;
+      background-color: #f7f7f7;
+    }
+
+    h1 {
+      color: #333;
     }
 
     input {
@@ -21,12 +26,22 @@
       font-size: 18px;
       margin-left: 10px;
       cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
     }
 
     #resultado {
       margin-top: 40px;
       font-size: 22px;
       font-weight: bold;
+      color: #222;
+      min-height: 40px;
     }
   </style>
 </head>
@@ -41,21 +56,35 @@
 
   <script>
     async function gerar() {
-      const palavra = document.getElementById("palavra").value;
+      const palavra = document.getElementById("palavra").value.trim();
       if (!palavra) {
         alert("Digite uma palavra!");
         return;
       }
 
-      const resposta = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ word: palavra })
-      });
+      document.getElementById("resultado").innerText = "Gerando...";
 
-      const dado = await resposta.json();
-      document.getElementById("resultado").innerText =
-        dado.sentence || "Erro ao gerar frase.";
+      try {
+        const resposta = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ word: palavra })
+        });
+
+        const dado = await resposta.json();
+
+        if (dado.sentence) {
+          document.getElementById("resultado").innerText = dado.sentence;
+        } else if (dado.error) {
+          document.getElementById("resultado").innerText = "Erro: " + dado.error;
+        } else {
+          document.getElementById("resultado").innerText = "Erro ao gerar frase.";
+        }
+
+      } catch (err) {
+        console.error(err);
+        document.getElementById("resultado").innerText = "Erro ao gerar frase.";
+      }
     }
   </script>
 
