@@ -3,17 +3,26 @@ import OpenAI from "openai";
 export default async function handler(req, res) {
   try {
     console.log("🚀 Nova requisição recebida");
-    console.log("METHOD:", req.method);
-    console.log("REQ BODY RAW:", req.body); // <-- Log detalhado do body
 
-    // Permitir apenas POST
     if (req.method !== "POST") {
       return res.status(200).json({
         info: "API online. Envie POST com { word: 'algo' }"
       });
     }
 
-    const { word } = req.body;
+    // Parse manual do body se não estiver disponível
+    let body = req.body;
+    if (!body || Object.keys(body).length === 0) {
+      body = JSON.parse(req.body || "{}");
+    }
+
+    console.log("REQ BODY:", body);
+
+    const { word } = body;
+
+    if (!word) {
+      return res.status(400).json({ error: "Palavra ausente." });
+    }
 
     if (!word) {
       console.log("⚠ Palavra ausente no req.body");
