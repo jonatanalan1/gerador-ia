@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Gerador de Frases com IA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      text-align: center;
+    }
+
+    input {
+      width: 300px;
+      padding: 10px;
+      font-size: 18px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    #resultado {
+      margin-top: 40px;
+      font-size: 22px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Gerador de Frases com IA</h1>
+
+  <input id="palavra" type="text" placeholder="Digite uma palavra...">
+  <button onclick="gerar()">Gerar frase</button>
+
+  <div id="resultado"></div>
+
+  <script>
+    async function gerar() {
+      const palavra = document.getElementById("palavra").value;
+      if (!palavra) {
+        alert("Digite uma palavra!");
+        return;
+      }
+
+      const resposta = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ word: palavra })
+      });
+
+      const dado = await resposta.json();
+      document.getElementById("resultado").innerText =
+        dado.sentence || "Erro ao gerar frase.";
+    }
+  </script>
+
+</body>
+</html>
